@@ -1,0 +1,12 @@
+# .gitignore
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Backend
+backend/node_modules/
+
+# Frontend
+frontend/node_modules/
+build/
