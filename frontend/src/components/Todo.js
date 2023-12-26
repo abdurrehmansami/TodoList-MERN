@@ -49,8 +49,9 @@ function Todo() {
 
 		axios.post('http://127.0.0.1:3001/addTodoList', { task: newTask, status: newStatus, deadline: newDeadline }) 
 			.then(res => { 
-				console.log(res); 
-				window.location.reload(); 
+				console.log('rs',res); 
+				// window.location.reload(); 
+				setTodoList([...todoList, {task:res.data.task, status:res.data.status, deadline:res.data.deadline}])
 			}) 
 			.catch(err => console.log(err)); 
 	} 
@@ -73,13 +74,29 @@ function Todo() {
 		axios.post('http://127.0.0.1:3001/updateTodoList/' + id, editedData) 
 			.then(result => { 
 				console.log(result); 
-				setEditableId(null); 
-				setEditedTask(""); 
-				setEditedStatus(""); 
-				setEditedDeadline(""); // Clear the edited deadline 
-				window.location.reload(); 
-			}) 
+				setTodoList(prevTodoList => {
+					return prevTodoList.map(todo => {
+					  if (todo._id === id) {
+						return {
+						  ...todo,
+						  task: editedTask,
+						  status: editedStatus,
+						  deadline: editedDeadline,
+						};
+					  } else {
+						return todo;
+					  }
+					});
+				  });
+			
+				  // Clear the edit form
+				  setEditableId(null); 
+				  setEditedTask(""); 
+				  setEditedStatus(""); 
+				  setEditedDeadline(""); // Clear the edited deadline
+				}) 
 			.catch(err => console.log(err)); 
+
 	} 
 
 
@@ -88,11 +105,12 @@ function Todo() {
 		axios.delete('http://127.0.0.1:3001/deleteTodoList/' + id) 
 			.then(result => { 
 				console.log(result); 
-				window.location.reload(); 
+				const tasks = todoList.filter(todo=>todo._id !== id)
+				setTodoList(tasks)
 			}) 
 			.catch(err => 
 				console.log(err) 
-			) 
+			)  
 	} 
 
 	return ( 
